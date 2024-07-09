@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Particle Animation Background with Message</title>
+    <title>Thank You Message with Particle Animation Background</title>
     <style>
         body, html {
             height: 100%;
@@ -13,7 +13,7 @@
             justify-content: center;
             font-family: Arial, Helvetica, sans-serif;
             overflow: hidden;
-            background: #000;
+            background: #282c34;
             color: white;
             text-align: center;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
@@ -33,7 +33,7 @@
 </head>
 <body>
     <canvas id="particleCanvas"></canvas>
-    <div class="message">Thank you all the teachers for everything?</div>
+    <div class="message">Thank you, my teachers, for everything</div>
     <script>
         const canvas = document.getElementById('particleCanvas');
         const ctx = canvas.getContext('2d');
@@ -73,7 +73,7 @@
                 const y = Math.random() * canvas.height;
                 const speedX = (Math.random() * 3) - 1.5;
                 const speedY = (Math.random() * 3) - 1.5;
-                const color = 'white';
+                const color = 'rgba(255, 255, 255, 0.5)';
                 particlesArray.push(new Particle(x, y, size, speedX, speedY, color));
             }
         }
