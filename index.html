@@ -3,34 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thank You Message with Fireworks Animation</title>
+    <title>Fireworks Animation with Moving Message</title>
     <style>
         body, html {
             height: 100%;
             margin: 0;
             overflow: hidden;
-            background: black;
             display: flex;
             align-items: center;
             justify-content: center;
+            background: black;
             font-family: Arial, Helvetica, sans-serif;
         }
         canvas {
             position: absolute;
             top: 0;
             left: 0;
-            display: block;
-            z-index: -1;
         }
         .message {
-            font-size: 3em;
-            color: red;
             position: absolute;
+            font-size: 2em;
+            color: blue;
+            font-weight: bold;
+            white-space: nowrap;
             animation: moveMessage 10s linear infinite;
         }
         @keyframes moveMessage {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+            0% {
+                transform: translate(-100%, 0);
+            }
+            100% {
+                transform: translate(100vw, 0);
+            }
         }
     </style>
 </head>
@@ -43,64 +47,66 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        function random(min, max) {
-            return Math.random() * (max - min) + min;
+        let particles = [];
+
+        function randomColor() {
+            const colors = ['red', 'blue', 'yellow', 'green'];
+            return colors[Math.floor(Math.random() * colors.length)];
         }
 
-        function createFirework() {
-            const firework = {
-                x: random(0, canvas.width),
-                y: canvas.height,
-                radius: random(2, 4),
-                speedY: random(-15, -10),
-                speedX: random(-5, 5),
-                color: `hsl(${random(0, 360)}, 100%, 50%)`,
-                alpha: 1,
-                decay: random(0.015, 0.03)
-            };
-            return firework;
+        class Particle {
+            constructor(x, y, size, color) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.color = color;
+                this.speedX = (Math.random() * 2) - 1;
+                this.speedY = (Math.random() * 2) - 1;
+                this.gravity = 0.05;
+            }
+            update() {
+                this.speedY += this.gravity;
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.size > 0.2) this.size -= 0.1;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fill();
+            }
         }
 
-        const fireworks = [];
-        setInterval(() => {
-            fireworks.push(createFirework());
-        }, 500);
-
-        function drawFirework(firework) {
-            ctx.beginPath();
-            ctx.arc(firework.x, firework.y, firework.radius, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${firework.color},${firework.alpha})`;
-            ctx.fill();
-        }
-
-        function updateFirework(firework) {
-            firework.x += firework.speedX;
-            firework.y += firework.speedY;
-            firework.alpha -= firework.decay;
+        function createFirework(x, y) {
+            const numParticles = 100;
+            for (let i = 0; i < numParticles; i++) {
+                const size = Math.random() * 3 + 1;
+                const color = randomColor();
+                particles.push(new Particle(x, y, size, color));
+            }
         }
 
         function animate() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            fireworks.forEach((firework, index) => {
-                if (firework.alpha <= 0) {
-                    fireworks.splice(index, 1);
-                } else {
-                    drawFirework(firework);
-                    updateFirework(firework);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((particle, index) => {
+                particle.update();
+                particle.draw();
+                if (particle.size <= 0.2) {
+                    particles.splice(index, 1);
                 }
             });
-
             requestAnimationFrame(animate);
         }
 
-        animate();
+        setInterval(() => {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            createFirework(x, y);
+        }, 500);
 
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
+        animate();
     </script>
 </body>
 </html>
